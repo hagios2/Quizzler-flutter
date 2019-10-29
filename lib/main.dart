@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() => runApp(Quizzler());
 
@@ -6,6 +10,7 @@ class Quizzler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade900,
         body: SafeArea(
@@ -25,6 +30,33 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  //declaring a list to track our answers
+
+  List<Icon> scoreKeeper = [];
+
+  void switchScene({bool input_answer}) {
+    setState(() {
+      if (quizBrain.questionAnswer() == input_answer) {
+        scoreKeeper.add(Icon(Icons.check, color: Colors.green));
+      } else {
+        scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+      }
+
+      if (quizBrain.getQuestionNumber() == quizBrain.getQuestionLength()) {
+        Alert(
+          context: context,
+          title: "QUIZZLER",
+          desc: "finished!,",
+          image: Image.asset("assets/success.jpg"),
+        ).show();
+
+        scoreKeeper = [];
+      }
+
+      quizBrain.nextquestion();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +69,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                quizBrain.question(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -62,6 +94,8 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked true.
+
+                switchScene(input_answer: true);
               },
             ),
           ),
@@ -80,11 +114,15 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
+
+                switchScene(input_answer: false);
               },
             ),
           ),
         ),
         //TODO: Add a Row here as your score keeper
+
+        Row(children: scoreKeeper)
       ],
     );
   }
@@ -95,3 +133,4 @@ question1: 'You can lead a cow down stairs but not up stairs.', false,
 question2: 'Approximately one quarter of human bones are in the feet.', true,
 question3: 'A slug\'s blood is green.', true,
 */
+//0547298801 0508161054
